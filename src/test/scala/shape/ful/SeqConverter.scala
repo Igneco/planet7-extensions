@@ -1,4 +1,4 @@
-package shapeless.examples
+package shape.ful
 
 /*
  * Copyright (c) 2014 Mario Pastorelli (pastorelli.mario@gmail.com)
@@ -18,20 +18,24 @@ package shapeless.examples
  * limitations under the License.
  */
 
+import planet7.tabular.Row
 import shapeless._, syntax.singleton._
+import shapeless.examples.StringConverter
 
 import scala.collection.immutable.{:: => Cons}
 import scala.util.{Try,Success,Failure}
 
 class CSVException(s: String) extends RuntimeException
 
-trait StringConverter[T] {
-  def from(s: String): Try[T]
-  def to(t: T): String
+// TODO - CAS - 31/01/15 - GenTraversableLike, or whatever
+// TODO - CAS - 31/01/15 - to()
+trait SeqConverter[T] {
+  def from(s: Seq[String]): Try[T]
+  def to(t: T): Seq[String] = ???
 }
 
-object StringConverter {
-  def apply[T](implicit st: Lazy[StringConverter[T]]): StringConverter[T] = st.value
+object SeqConverter {
+  def apply[T](implicit st: Lazy[SeqConverter[T]]): SeqConverter[T] = st.value
 
   def fail(s: String) = Failure(new CSVException(s))
 
@@ -63,39 +67,37 @@ object StringConverter {
     }
 
   // HList
-  implicit def deriveHNil: StringConverter[HNil] =
-    new StringConverter[HNil] {
-      def from(s: String): Try[HNil] = s match {
-        case "" => Success(HNil)
-        case s => fail("Cannot convert '" ++ s ++ "' to HNil")
+  implicit def deriveHNil: SeqConverter[HNil] =
+    new SeqConverter[HNil] {
+      def from(s: Seq[String]): Try[HNil] = s match {
+        case Nil => Success(HNil)
+        case s => fail("Cannot convert '" ++ s.toString ++ "' to HNil")
       }
-
-      def to(n: HNil) = ""
     }
 
   // HList
-  implicit def deriveHCons[V, T <: HList](implicit scv: Lazy[StringConverter[V]], sct: Lazy[StringConverter[T]]): StringConverter[V :: T] =
-    new StringConverter[V :: T] {
-      def from(s: String): Try[V :: T] = s.span(_ != ',') match {
-        case (before, after) =>
-          for {
-            front <- scv.value.from(before)
-            back <- sct.value.from(if (after.isEmpty) after else after.tail)
-          } yield front :: back
+  implicit def deriveHConsFromSeq[V, T <: HList](implicit scv: Lazy[StringConverter[V]], sct: Lazy[SeqConverter[T]]): SeqConverter[V :: T] =
+    new SeqConverter[V :: T] {
+      def from(s: Seq[String]): Try[V :: T] = {
+        println("deriveHConsFromSeq")
+        (s.head, s.tail) match {
+          case (before, after) =>
+            for {
+              front <- scv.value.from(before)
+              back <- sct.value.from(if (after.isEmpty) Nil else after.tail)
+            } yield front :: back
 
-        case _ => fail("Cannot convert '" ++ s ++ "' to HList")
-      }
-
-      def to(ft: V :: T): String = {
-        scv.value.to(ft.head) ++ "," ++ sct.value.to(ft.tail)
+          case _ => fail("Cannot convert '" ++ s.mkString("[",",","]") ++ "' to HList")
+        }
       }
     }
 
-  // Any case class. Generic.Aux[A,R] is equivalent to Generic.Aux[MyCaseClass,HListOfMyCaseClass]
-  // To see the type of R: deriveClass[A,R: ClassTag] ... val rClazz = implicitly[ClassTag[R]].runtimeClass
-  implicit def deriveClass[A,R](implicit gen: Generic.Aux[A,R], toHListConv: StringConverter[R]): StringConverter[A] =
-    new StringConverter[A] {
-      def from(s: String): Try[A] = toHListConv.from(s).map(gen.from)
-      def to(a: A): String = toHListConv.to(gen.to(a))
+
+  implicit def deriveClassFromSeq[A, R](implicit gen: Generic.Aux[A, R], toHListConv: SeqConverter[R]): SeqConverter[A] =
+    new SeqConverter[A] {
+      def from(s: Seq[String]): Try[A] = {
+        println("deriveClassFromSeq")
+        toHListConv.from(s).map(gen.from)
+      }
     }
 }
