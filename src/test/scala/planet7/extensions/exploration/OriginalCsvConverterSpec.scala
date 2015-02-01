@@ -1,10 +1,8 @@
-package planet7.extensions
+package planet7.extensions.exploration
 
 import org.scalatest.{MustMatchers, WordSpec}
-
+import planet7.extensions._
 import planet7.tabular._
-
-import shapeless._
 import shapeless.examples.CSVConverter
 
 import scala.util.Try

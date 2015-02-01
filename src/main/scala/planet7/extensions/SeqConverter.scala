@@ -23,8 +23,6 @@ import shapeless._
 
 import scala.util.{Failure, Success, Try}
 
-class CSVException(s: String) extends RuntimeException
-
 // TODO - CAS - 31/01/15 - GenTraversableLike, or whatever
 // TODO - CAS - 31/01/15 - to()
 trait SeqConverter[T] {
@@ -34,10 +32,16 @@ trait SeqConverter[T] {
 
 object SeqConverter {
   import shapeless.examples.CSVConverter
+  import shapeless.examples.CSVException
 
   def apply[T](implicit st: Lazy[SeqConverter[T]]): SeqConverter[T] = st.value
 
   def fail(s: String) = Failure(new CSVException(s))
+
+  implicit def bigDecimalCsvConverter: CSVConverter[BigDecimal] = new CSVConverter[BigDecimal] {
+    def from(s: String): Try[BigDecimal] = Try(BigDecimal(s))
+    def to(i: BigDecimal): String = i.toString()
+  }
 
   // HList
   implicit def deriveHNil: SeqConverter[HNil] =

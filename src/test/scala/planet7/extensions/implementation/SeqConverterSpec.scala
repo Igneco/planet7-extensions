@@ -1,6 +1,7 @@
-package planet7.extensions
+package planet7.extensions.implementation
 
 import org.scalatest.{MustMatchers, WordSpec}
+import planet7.extensions.{ActualPerson, SeqConverter}
 import planet7.tabular._
 
 import scala.util.Try
@@ -8,14 +9,9 @@ import scala.util.Try
 // TODO - CAS - 30/01/15 - Work out the best way to present errors
 // TODO - CAS - 30/01/15 - Supply better error messages in the toNumberType-style implicit conversions
 class SeqConverterSpec extends WordSpec with MustMatchers {
-  import shapeless.examples.CSVConverter
+  import planet7.extensions.SeqConverter._
 
-  implicit def bigDecimalCsvConverter: CSVConverter[BigDecimal] = new CSVConverter[BigDecimal] {
-    def from(s: String): Try[BigDecimal] = Try(BigDecimal(s))
-    def to(i: BigDecimal): String = i.toString()
-  }
-
-  "Super simples Seqs" in {
+  "Single class example" in {
     val seq: Seq[String] = Seq("5", "Jeremiah", "Jones", "13.3")
 
     val triedPerson: Try[ActualPerson] = SeqConverter[ActualPerson].from(seq)
@@ -23,7 +19,7 @@ class SeqConverterSpec extends WordSpec with MustMatchers {
     println(s"triedPerson: ${triedPerson}")
   }
 
-  "Simples in Seqs" in {
+  "Row in Csv example" in {
     val input = """ID,First Name,Surname,Fee
                   |5,Jeremiah,Jones,13.3""".stripMargin
 
