@@ -1,4 +1,4 @@
-package shape.ful
+package planet7.extensions
 
 /*
  * Copyright (c) 2014 Mario Pastorelli (pastorelli.mario@gmail.com)
@@ -19,10 +19,9 @@ package shape.ful
  * limitations under the License.
  */
 
-import planet7.tabular.Row
-import shapeless._, syntax.singleton._
+import shapeless._
 
-import scala.util.{Try,Success,Failure}
+import scala.util.{Failure, Success, Try}
 
 class CSVException(s: String) extends RuntimeException
 

@@ -1,4 +1,4 @@
-package shape.ful
+package planet7.extensions
 
 import org.scalatest.{MustMatchers, WordSpec}
 import planet7.tabular._
