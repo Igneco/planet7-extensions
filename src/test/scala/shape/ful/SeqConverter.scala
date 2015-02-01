@@ -21,7 +21,7 @@ package shape.ful
 
 import planet7.tabular.Row
 import shapeless._, syntax.singleton._
-import shapeless.examples.StringConverter
+import shapeless.examples.CSVConverter
 
 import scala.collection.immutable.{:: => Cons}
 import scala.util.{Try,Success,Failure}
@@ -40,19 +40,19 @@ object SeqConverter {
 
   def fail(s: String) = Failure(new CSVException(s))
 
-  implicit def stringCSVConverter: StringConverter[String] =
-    new StringConverter[String] {
+  implicit def stringCSVConverter: CSVConverter[String] =
+    new CSVConverter[String] {
       def from(s: String): Try[String] = Success(s)
       def to(s: String): String = s
     }
 
-  implicit def intCsvConverter: StringConverter[Int] =
-    new StringConverter[Int] {
+  implicit def intCsvConverter: CSVConverter[Int] =
+    new CSVConverter[Int] {
       def from(s: String): Try[Int] = Try(s.toInt)
       def to(i: Int): String = i.toString
     }
 
-  def listCsvLinesConverter[A](l: List[String])(implicit ec: StringConverter[A]): Try[List[A]] =
+  def listCsvLinesConverter[A](l: List[String])(implicit ec: CSVConverter[A]): Try[List[A]] =
     l match {
       case Nil => Success(Nil)
       case Cons(s, ss) => for {
@@ -61,8 +61,8 @@ object SeqConverter {
       } yield Cons(x, xs)
     }
 
-  implicit def listCsvConverter[A](implicit ec: StringConverter[A]): StringConverter[List[A]] =
-    new StringConverter[List[A]] {
+  implicit def listCsvConverter[A](implicit ec: CSVConverter[A]): CSVConverter[List[A]] =
+    new CSVConverter[List[A]] {
       def from(s: String): Try[List[A]] = listCsvLinesConverter(s.split("\n").toList)(ec)
       def to(l: List[A]): String = l.map(ec.to).mkString("\n")
     }
@@ -77,7 +77,7 @@ object SeqConverter {
     }
 
   // HList
-  implicit def deriveHConsFromSeq[V, T <: HList](implicit stringConv: Lazy[StringConverter[V]], seqConv: Lazy[SeqConverter[T]]): SeqConverter[V :: T] =
+  implicit def deriveHConsFromSeq[V, T <: HList](implicit stringConv: Lazy[CSVConverter[V]], seqConv: Lazy[SeqConverter[T]]): SeqConverter[V :: T] =
     new SeqConverter[V :: T] {
       def from(s: Seq[String]): Try[V :: T] = {
         (s.head, s.tail) match {

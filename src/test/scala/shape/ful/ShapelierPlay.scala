@@ -2,7 +2,7 @@ package shape.ful
 
 import org.scalatest.{MustMatchers, WordSpec}
 import planet7.tabular._
-import shapeless.examples.StringConverter
+import shapeless.examples.CSVConverter
 
 import scala.util.Try
 
@@ -11,7 +11,7 @@ import scala.util.Try
 // TODO - CAS - 30/01/15 - Supply better error messages in the toNumberType-style implicit conversions
 class ShapelierPlay extends WordSpec with MustMatchers {
 
-  implicit def bigDecimalCsvConverter: StringConverter[BigDecimal] = new StringConverter[BigDecimal] {
+  implicit def bigDecimalCsvConverter: CSVConverter[BigDecimal] = new CSVConverter[BigDecimal] {
     def from(s: String): Try[BigDecimal] = Try(BigDecimal(s))
     def to(i: BigDecimal): String = i.toString()
   }
@@ -22,7 +22,7 @@ class ShapelierPlay extends WordSpec with MustMatchers {
 
     val csv = Csv(input)
 
-    val maybeResources: Iterator[Try[ActualPerson]] = csv.iterator.map(row => StringConverter[ActualPerson].from(row.data.mkString(",")))
+    val maybeResources: Iterator[Try[ActualPerson]] = csv.iterator.map(row => CSVConverter[ActualPerson].from(row.data.mkString(",")))
 
     val partitioned: (Iterator[Try[ActualPerson]], Iterator[Try[ActualPerson]]) = maybeResources.partition(_.isSuccess)
 
