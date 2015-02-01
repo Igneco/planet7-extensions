@@ -14,7 +14,7 @@ class OriginalCsvConverterSpec extends WordSpec with MustMatchers {
     def to(i: BigDecimal): String = i.toString()
   }
 
-  "We can convert Csv rows to much more betterer case classes" in {
+  "Convert Csv rows to case classes" in {
     val input = """ID,First Name,Surname,Fee
                   |1,Sue,Smith,10.0
                   |3,Bob,Smith,12.2
@@ -26,9 +26,10 @@ class OriginalCsvConverterSpec extends WordSpec with MustMatchers {
     val maybeResources: Iterator[Try[ActualPerson]] = csv.iterator.map(row => CSVConverter[ActualPerson].from(row.data.mkString(",")))
 
     println(s"maybeResources.mkString(): ${maybeResources.mkString("\n")}")
+    fail("assert me")
   }
 
-  "All the failure cases" in {
+  "Showing failure cases" in {
     val input = """ID,First Name,Surname,Fee
                   |dog,Sue,Smith,10.0
                   |3,Bob,Smith,rabbit
@@ -43,5 +44,6 @@ class OriginalCsvConverterSpec extends WordSpec with MustMatchers {
 
     println(s"success:\n${partitioned._1.toList.mkString("\n")}")
     println(s"failure:\n${partitioned._2.toList.mkString("\n")}")
+    fail("assert me")
   }
 }
