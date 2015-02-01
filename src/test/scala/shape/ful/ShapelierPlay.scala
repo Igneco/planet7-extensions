@@ -37,4 +37,17 @@ class ShapelierPlay extends WordSpec with MustMatchers {
 
     println(s"triedPerson: ${triedPerson}")
   }
+
+  "Simples in Seqs" in {
+    val input = """ID,First Name,Surname,Fee
+                  |5,Jeremiah,Jones,13.3""".stripMargin
+
+    val maybeResources: Iterator[Try[ActualPerson]] =
+      Csv(input).iterator.map(row => SeqConverter[ActualPerson].from(row.data))
+
+    val partitioned: (Iterator[Try[ActualPerson]], Iterator[Try[ActualPerson]]) = maybeResources.partition(_.isSuccess)
+
+    println(s"success:\n${partitioned._1.toList.mkString("\n")}")
+    println(s"failure:\n${partitioned._2.toList.mkString("\n")}")
+  }
 }

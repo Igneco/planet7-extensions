@@ -2,6 +2,7 @@ package shape.ful
 
 /*
  * Copyright (c) 2014 Mario Pastorelli (pastorelli.mario@gmail.com)
+ *
  * Modified 2015 by Chris Agmen-Smith, to allow handling of Csv data that 
  * has already been parsed into rows of data elements
  *
@@ -71,7 +72,7 @@ object SeqConverter {
     new SeqConverter[HNil] {
       def from(s: Seq[String]): Try[HNil] = s match {
         case Nil => Success(HNil)
-        case s => fail("Cannot convert '" ++ s.toString ++ "' to HNil")
+        case _ => fail("Cannot convert '" ++ s.toString ++ "' to HNil")
       }
     }
 
@@ -80,20 +81,19 @@ object SeqConverter {
     new SeqConverter[V :: T] {
       def from(s: Seq[String]): Try[V :: T] = {
         (s.head, s.tail) match {
-          case (head, tail) => {
-            println(s"$head :: $tail")
+          case (head, tail) =>
             for {
               front <- stringConv.value.from(head)
               back <- seqConv.value.from(if (tail.isEmpty) Nil else tail)
             } yield front :: back
-          }
 
           case _ => fail("Cannot convert '" ++ s.mkString("[",",","]") ++ "' to HList")
         }
       }
     }
 
-
+  // Any case class. Generic.Aux[A,R] is equivalent to Generic.Aux[MyCaseClass,HListOfMyCaseClass]
+  // To see the type of R: deriveClass[A,R: ClassTag] ... val rClazz = implicitly[ClassTag[R]].runtimeClass
   implicit def deriveClassFromSeq[A, R](implicit gen: Generic.Aux[A, R], toHListConv: SeqConverter[R]): SeqConverter[A] =
     new SeqConverter[A] {
       def from(s: Seq[String]): Try[A] = toHListConv.from(s).map(gen.from)

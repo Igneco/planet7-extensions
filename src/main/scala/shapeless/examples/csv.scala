@@ -2,8 +2,6 @@ package shapeless.examples
 
 /*
  * Copyright (c) 2014 Mario Pastorelli (pastorelli.mario@gmail.com)
- * Modified 2015 by Chris Agmen-Smith, to allow handling of Csv data that 
- * has already been parsed into rows of data elements
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,8 +89,6 @@ object StringConverter {
       }
     }
 
-  // Any case class. Generic.Aux[A,R] is equivalent to Generic.Aux[MyCaseClass,HListOfMyCaseClass]
-  // To see the type of R: deriveClass[A,R: ClassTag] ... val rClazz = implicitly[ClassTag[R]].runtimeClass
   implicit def deriveClass[A,R](implicit gen: Generic.Aux[A,R], toHListConv: StringConverter[R]): StringConverter[A] =
     new StringConverter[A] {
       def from(s: String): Try[A] = toHListConv.from(s).map(gen.from)
