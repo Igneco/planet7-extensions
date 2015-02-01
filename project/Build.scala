@@ -26,5 +26,5 @@ object Build extends Build {
     }
   )
 
-  lazy val main = Project(id = "shapeful", base = file(".")).settings(sharedSettings: _*)
+  lazy val main = Project(id = "planet7-extensions", base = file(".")).settings(sharedSettings: _*)
 }
