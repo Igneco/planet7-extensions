@@ -23,7 +23,6 @@ import planet7.tabular.Row
 import shapeless._, syntax.singleton._
 import shapeless.examples.CSVConverter
 
-import scala.collection.immutable.{:: => Cons}
 import scala.util.{Try,Success,Failure}
 
 class CSVException(s: String) extends RuntimeException
@@ -39,33 +38,6 @@ object SeqConverter {
   def apply[T](implicit st: Lazy[SeqConverter[T]]): SeqConverter[T] = st.value
 
   def fail(s: String) = Failure(new CSVException(s))
-
-  implicit def stringCSVConverter: CSVConverter[String] =
-    new CSVConverter[String] {
-      def from(s: String): Try[String] = Success(s)
-      def to(s: String): String = s
-    }
-
-  implicit def intCsvConverter: CSVConverter[Int] =
-    new CSVConverter[Int] {
-      def from(s: String): Try[Int] = Try(s.toInt)
-      def to(i: Int): String = i.toString
-    }
-
-  def listCsvLinesConverter[A](l: List[String])(implicit ec: CSVConverter[A]): Try[List[A]] =
-    l match {
-      case Nil => Success(Nil)
-      case Cons(s, ss) => for {
-        x <- ec.from(s)
-        xs <- listCsvLinesConverter(ss)(ec)
-      } yield Cons(x, xs)
-    }
-
-  implicit def listCsvConverter[A](implicit ec: CSVConverter[A]): CSVConverter[List[A]] =
-    new CSVConverter[List[A]] {
-      def from(s: String): Try[List[A]] = listCsvLinesConverter(s.split("\n").toList)(ec)
-      def to(l: List[A]): String = l.map(ec.to).mkString("\n")
-    }
 
   // HList
   implicit def deriveHNil: SeqConverter[HNil] =
