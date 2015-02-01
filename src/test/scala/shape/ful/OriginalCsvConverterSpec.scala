@@ -9,7 +9,7 @@ import shapeless.examples.CSVConverter
 
 import scala.util.Try
 
-class ShapePlay extends WordSpec with MustMatchers {
+class OriginalCsvConverterSpec extends WordSpec with MustMatchers {
 
   implicit def bigDecimalCsvConverter: CSVConverter[BigDecimal] = new CSVConverter[BigDecimal] {
     def from(s: String): Try[BigDecimal] = Try(BigDecimal(s))

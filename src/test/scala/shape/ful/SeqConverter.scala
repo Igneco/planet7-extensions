@@ -21,7 +21,6 @@ package shape.ful
 
 import planet7.tabular.Row
 import shapeless._, syntax.singleton._
-import shapeless.examples.CSVConverter
 
 import scala.util.{Try,Success,Failure}
 
@@ -35,6 +34,8 @@ trait SeqConverter[T] {
 }
 
 object SeqConverter {
+  import shapeless.examples.CSVConverter
+
   def apply[T](implicit st: Lazy[SeqConverter[T]]): SeqConverter[T] = st.value
 
   def fail(s: String) = Failure(new CSVException(s))
