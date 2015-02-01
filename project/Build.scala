@@ -10,6 +10,7 @@ object Build extends Build {
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots")
     ),
+    crossScalaVersions := Seq("2.11.5"),
     libraryDependencies ++= Seq(
       "com.chuusai" %% "shapeless" % "2.1.0-RC1",
       "com.github.agmenc" %% "planet7" % "0.1.7",
