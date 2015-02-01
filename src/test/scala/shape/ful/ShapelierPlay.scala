@@ -32,7 +32,9 @@ class ShapelierPlay extends WordSpec with MustMatchers {
 
   "Super simples Seqs" in {
     val seq: Seq[String] = Seq("5", "Jeremiah", "Jones", "13.3")
+
     val triedPerson: Try[ActualPerson] = SeqConverter[ActualPerson].from(seq)
+
     println(s"triedPerson: ${triedPerson}")
   }
 }

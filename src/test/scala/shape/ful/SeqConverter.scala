@@ -76,16 +76,17 @@ object SeqConverter {
     }
 
   // HList
-  implicit def deriveHConsFromSeq[V, T <: HList](implicit scv: Lazy[StringConverter[V]], sct: Lazy[SeqConverter[T]]): SeqConverter[V :: T] =
+  implicit def deriveHConsFromSeq[V, T <: HList](implicit stringConv: Lazy[StringConverter[V]], seqConv: Lazy[SeqConverter[T]]): SeqConverter[V :: T] =
     new SeqConverter[V :: T] {
       def from(s: Seq[String]): Try[V :: T] = {
-        println("deriveHConsFromSeq")
         (s.head, s.tail) match {
-          case (before, after) =>
+          case (head, tail) => {
+            println(s"$head :: $tail")
             for {
-              front <- scv.value.from(before)
-              back <- sct.value.from(if (after.isEmpty) Nil else after.tail)
+              front <- stringConv.value.from(head)
+              back <- seqConv.value.from(if (tail.isEmpty) Nil else tail)
             } yield front :: back
+          }
 
           case _ => fail("Cannot convert '" ++ s.mkString("[",",","]") ++ "' to HList")
         }
@@ -95,9 +96,6 @@ object SeqConverter {
 
   implicit def deriveClassFromSeq[A, R](implicit gen: Generic.Aux[A, R], toHListConv: SeqConverter[R]): SeqConverter[A] =
     new SeqConverter[A] {
-      def from(s: Seq[String]): Try[A] = {
-        println("deriveClassFromSeq")
-        toHListConv.from(s).map(gen.from)
-      }
+      def from(s: Seq[String]): Try[A] = toHListConv.from(s).map(gen.from)
     }
 }
