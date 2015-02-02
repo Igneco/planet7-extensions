@@ -1,3 +1,9 @@
 package planet7
 
-package object extensions extends SeqConverterImplicits
+import shapeless.Lazy
+
+package object extensions extends SeqConverterImplicits with RowConverterImplicits {
+  object ConvertTo {
+    def apply[T](implicit rowConv: Lazy[RowConverter[T]]): RowConverter[T] = rowConv.value
+  }
+}

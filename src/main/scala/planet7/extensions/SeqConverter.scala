@@ -8,7 +8,7 @@ import shapeless._
 import scala.util.{Failure, Success, Try}
 
 object CaseClassConverter {
-  def apply[T](implicit st: Lazy[SeqConverter[T]]): SeqConverter[T] = st.value
+  def apply[T](implicit seqConv: Lazy[SeqConverter[T]]): SeqConverter[T] = seqConv.value
 }
 
 // TODO - CAS - 31/01/15 - GenTraversableLike, or whatever
@@ -19,8 +19,7 @@ trait SeqConverter[T] {
 }
 
 trait SeqConverterImplicits {
-  import shapeless.examples.CSVConverter
-  import shapeless.examples.CSVException
+  import shapeless.examples.{CSVConverter, CSVException}
 
   def fail(s: String) = Failure(new CSVException(s))
 

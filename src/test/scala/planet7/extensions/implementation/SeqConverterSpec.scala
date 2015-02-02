@@ -68,7 +68,7 @@ class SeqConverterSpec extends WordSpec with MustMatchers {
         "Age" -> defaultTo("0"),
         "Fee" -> defaultTo("0.0")
       )
-      .map(row => CaseClassConverter[FullRecord].from(row.data))
+      .map(ConvertTo[FullRecord].fromRow)
       .map {
         case Success(fr) => fr
         case Failure(e) => FullRecordHelper.emptyRecord
