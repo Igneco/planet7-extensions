@@ -71,7 +71,7 @@ class SeqConverterSpec extends WordSpec with MustMatchers {
       .map(row => CaseClassConverter[FullRecord].from(row.data))
       .map {
         case Success(fr) => fr
-        case Failure(e) => println(s"e.getMessage: ${e.getMessage}"); FullRecordHelper.emptyRecord
+        case Failure(e) => FullRecordHelper.emptyRecord
       }
       .groupBy(_.id)
       .mapValues(FullRecordHelper.combine)
