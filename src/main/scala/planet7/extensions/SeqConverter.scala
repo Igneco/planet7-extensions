@@ -15,7 +15,7 @@ object CaseClassConverter {
 // TODO - CAS - 31/01/15 - to()
 trait SeqConverter[T] {
   def from(s: Seq[String]): Try[T]
-  def to(t: T): Seq[String] = ???
+  def to(t: T): Seq[String]
 }
 
 trait SeqConverterImplicits {
@@ -34,6 +34,8 @@ trait SeqConverterImplicits {
         case Nil => Success(HNil)
         case _ => fail("Cannot convert '" ++ s.toString ++ "' to HNil")
       }
+
+      def to(t: HNil): Seq[String] = Seq()
     }
 
   implicit def deriveHConsFromSeq[V, T <: HList](implicit stringConv: Lazy[CSVConverter[V]], seqConv: Lazy[SeqConverter[T]]): SeqConverter[V :: T] =
@@ -49,6 +51,8 @@ trait SeqConverterImplicits {
           case _ => fail("Cannot convert '" ++ s.mkString("[",",","]") ++ "' to HList")
         }
       }
+
+      def to(t: V :: T): Seq[String] = stringConv.value.to(t.head) +: seqConv.value.to(t.tail)
     }
 
   // Generic.Aux[A,R] is equivalent to Generic.Aux[MyCaseClass,HListOfMyCaseClass]
@@ -56,5 +60,6 @@ trait SeqConverterImplicits {
   implicit def deriveCaseClassFromSeq[A, R](implicit gen: Generic.Aux[A, R], toHListConv: SeqConverter[R]): SeqConverter[A] =
     new SeqConverter[A] {
       def from(s: Seq[String]): Try[A] = toHListConv.from(s).map(gen.from)
+      def to(t: A) = toHListConv.to(gen.to(t))
     }
 }

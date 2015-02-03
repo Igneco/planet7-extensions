@@ -6,4 +6,8 @@ package object extensions extends SeqConverterImplicits with RowConverterImplici
   object ConvertTo {
     def apply[T](implicit rowConv: Lazy[RowConverter[T]]): RowConverter[T] = rowConv.value
   }
+
+  object ConvertFrom {
+    def apply[T](implicit rowConv: Lazy[RowConverter[T]]): RowConverter[T] = rowConv.value
+  }
 }

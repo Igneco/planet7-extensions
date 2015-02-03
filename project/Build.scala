@@ -12,8 +12,8 @@ object Build extends Build {
     ),
     crossScalaVersions := Seq("2.11.5"),
     libraryDependencies ++= Seq(
-      "com.chuusai" %% "shapeless" % "2.1.0-RC1",
-      "com.github.agmenc" %% "planet7" % "0.1.8",
+      "com.chuusai" %% "shapeless" % "2.1.0-RC2",
+      "com.github.agmenc" %% "planet7" % "0.1.9",
       "junit" % "junit" % "4.11" % "test",
       "org.scalatest" %% "scalatest" % "2.2.0" % "test"
     ),
