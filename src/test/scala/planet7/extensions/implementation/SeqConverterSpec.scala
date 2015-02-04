@@ -28,4 +28,9 @@ class SeqConverterSpec extends WordSpec with MustMatchers {
     println(s"failure:\n${partitioned._2.toList.mkString("\n")}")
     fail("Be more assertive")
   }
+
+  "Commas and blanks are sanitized in BigDecimal conversions" in {
+    bigDecimalCsvConverter.from("100,000,000.00").get mustEqual BigDecimal("100000000.00")
+    bigDecimalCsvConverter.from("").get mustEqual BigDecimal("0.00")
+  }
 }

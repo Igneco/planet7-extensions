@@ -23,9 +23,11 @@ trait SeqConverterImplicits {
   def fail(s: String) = Failure(new CSVException(s))
 
   implicit def bigDecimalCsvConverter: CSVConverter[BigDecimal] = new CSVConverter[BigDecimal] {
-    def from(s: String): Try[BigDecimal] = Try(BigDecimal(s)).recoverWith{
+    def from(s: String): Try[BigDecimal] = Try(BigDecimal(makeSafe(s))).recoverWith{
       case t: Throwable => Failure(StringConverterException(t, s))
     }
+
+    private def makeSafe(s: String) = s.replaceAll(",", "").replaceAll("$^", "0.00")
 
     def to(i: BigDecimal): String = i.toString()
   }
