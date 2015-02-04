@@ -9,7 +9,6 @@ import scala.util.{Failure, Success}
 
 // TODO - CAS - 01/02/15 - Add assertions to specs
 // TODO - CAS - 30/01/15 - Work out the best way to present errors
-// TODO - CAS - 30/01/15 - Supply better error messages in the toNumberType-style implicit conversions
 class RowConverterSpec extends WordSpec with MustMatchers {
   "ConvertTo case class from Row" in {
     val row: Row = Row(Array("5", "Jeremiah", "Jones", "13.3"))
@@ -70,6 +69,21 @@ class RowConverterSpec extends WordSpec with MustMatchers {
     val result: Csv = Csv(Row(outputColumns.toArray), condensed)
 
     Diff(result, expected, NaiveRowDiffer) mustBe empty
+  }
+
+  "Handles BigDecimal conversion errors with a helpful error message" in {
+    val row: Row = Row(Array("5", "Jeremiah", "Jones", "thirteen point three"))
+
+    val expectedErrorMessage: String =
+      """Failed to convert row:
+        |  Row: 5,Jeremiah,Jones,thirteen point three
+        |  Error: Could not convert value [thirteen point three] to BigDecimal, because of: java.lang.NumberFormatException
+        |""".stripMargin
+
+    ConvertTo[ActualPerson].fromRow(row) match {
+      case Success(_) => fail("This conversion is tailor-made to FAIL")
+      case Failure(e) => e.toString mustEqual expectedErrorMessage
+    }
   }
 }
 

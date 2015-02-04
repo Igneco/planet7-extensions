@@ -12,7 +12,6 @@ object CaseClassConverter {
 }
 
 // TODO - CAS - 31/01/15 - GenTraversableLike, or whatever
-// TODO - CAS - 31/01/15 - to()
 trait SeqConverter[T] {
   def from(s: Seq[String]): Try[T]
   def to(t: T): Seq[String]
@@ -24,7 +23,10 @@ trait SeqConverterImplicits {
   def fail(s: String) = Failure(new CSVException(s))
 
   implicit def bigDecimalCsvConverter: CSVConverter[BigDecimal] = new CSVConverter[BigDecimal] {
-    def from(s: String): Try[BigDecimal] = Try(BigDecimal(s))
+    def from(s: String): Try[BigDecimal] = Try(BigDecimal(s)).recoverWith{
+      case t: Throwable => Failure(StringConverterException(t, s))
+    }
+
     def to(i: BigDecimal): String = i.toString()
   }
 
@@ -62,4 +64,8 @@ trait SeqConverterImplicits {
       def from(s: Seq[String]): Try[A] = toHListConv.from(s).map(gen.from)
       def to(t: A) = toHListConv.to(gen.to(t))
     }
+}
+
+case class StringConverterException(e: Throwable, originalValue: String) extends RuntimeException {
+  override def toString = s"Could not convert value [$originalValue] to BigDecimal, because of: $e"
 }
