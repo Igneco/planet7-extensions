@@ -32,7 +32,7 @@ trait SeqConverterImplicits {
     def to(i: BigDecimal): String = i.toString()
   }
 
-  implicit def deriveHNil: SeqConverter[HNil] =
+  implicit def deriveHNilFromSeq: SeqConverter[HNil] =
     new SeqConverter[HNil] {
       def from(s: Seq[String]): Try[HNil] = s match {
         case Nil => Success(HNil)
