@@ -11,7 +11,6 @@ CSV Row <=> Case Class
 ----------------------
 
 The result is returned as a `Try`, since there is a runtime element in the data conversion:
-
 ```scala
 "ConvertTo case class from Row" in {
   val row: Row = Row(Array("5", "Jeremiah", "Jones", "13.3"))
@@ -20,8 +19,10 @@ The result is returned as a `Try`, since there is a runtime element in the data 
 
   triedPerson.get mustEqual ActualPerson(5, "Jeremiah", "Jones", 13.3)
 }
+```
 
 We can always convert a case class to a `Row`, so no `Try` is needed here:
+```scala
 "ConvertTo to Row from case class" in {
   val person = ActualPerson(5, "Jeremiah", "Jones", 13.3)
 
