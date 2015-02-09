@@ -9,8 +9,12 @@ The code is based on the excellent [examples provided with Shapeless](https://gi
 
 CSV Row <=> Case Class
 ----------------------
+Given:
+```scala
+case class ActualPerson(id: Int, firstName: String, surname: String, fee: BigDecimal)
+```
 
-The result is returned as a `Try`, since there is a runtime element in the data conversion:
+Converting a `Row` to a case class returns a `Try`, since there is a runtime element in the data conversion:
 ```scala
 "ConvertTo case class from Row" in {
   val row: Row = Row(Array("5", "Jeremiah", "Jones", "13.3"))
