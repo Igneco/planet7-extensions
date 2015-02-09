@@ -40,6 +40,8 @@ Case Class + Case Class
 -----------------------
 
 ```scala
+case class Transaction(accountId: String, desc: String, price: BigDecimal, lots: Int)
+
 "Adding case classes sums Numerics, ORs Booleans and prefers the first nonEmpty String" in {
   val buy = Transaction("1", "buy", -26.3, 20)
   val sell = Transaction("1", "sell", 72.4, -30)
