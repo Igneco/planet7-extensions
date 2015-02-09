@@ -5,7 +5,7 @@ import planet7.Diff
 import planet7.extensions._
 import planet7.tabular._
 
-import scala.util.{Failure, Success}
+import scala.util.{Try, Failure, Success}
 
 // TODO - CAS - 01/02/15 - Add assertions to specs
 // TODO - CAS - 30/01/15 - Work out the best way to present errors
@@ -13,9 +13,9 @@ class RowConverterSpec extends WordSpec with MustMatchers {
   "ConvertTo case class from Row" in {
     val row: Row = Row(Array("5", "Jeremiah", "Jones", "13.3"))
 
-    val triedPerson = ConvertTo[ActualPerson].fromRow(row).get
+    val triedPerson: Try[ActualPerson] = ConvertTo[ActualPerson].fromRow(row)
 
-    triedPerson mustEqual ActualPerson(5, "Jeremiah", "Jones", 13.3)
+    triedPerson.get mustEqual ActualPerson(5, "Jeremiah", "Jones", 13.3)
   }
 
   "ConvertTo to Row from case class" in {
