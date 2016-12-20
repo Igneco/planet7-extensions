@@ -16,6 +16,8 @@ case class ActualPerson(id: Int, firstName: String, surname: String, fee: BigDec
 
 Converting a `Row` to a case class returns a `Try`, since there is a runtime element in the data conversion:
 ```scala
+import planet7.extensions._
+
 "ConvertTo case class from Row" in {
   val row: Row = Row(Array("5", "Jeremiah", "Jones", "13.3"))
 
