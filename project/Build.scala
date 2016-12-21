@@ -4,18 +4,18 @@ import Keys._
 object Build extends Build {
 
   def sharedSettings = Seq(
-    scalaVersion:= "2.11.7",
+    scalaVersion:= "2.12.0",
     scalacOptions += "-deprecation",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots")
     ),
-    crossScalaVersions := Seq("2.11.7"),
+    crossScalaVersions := Seq("2.11.7", "2.12.0"),
     libraryDependencies ++= Seq(
-      "com.chuusai" %% "shapeless" % "2.1.0-RC2",
-      "com.github.agmenc" %% "planet7" % "0.1.14",
+      "com.chuusai" %% "shapeless" % "2.3.2",
+      "com.github.agmenc" %% "planet7" % "0.1.15",
       "junit" % "junit" % "4.11" % "test",
-      "org.scalatest" %% "scalatest" % "2.2.0" % "test"
+      "org.scalatest" %% "scalatest" % "3.0.0" % "test"
     )
   )
 
